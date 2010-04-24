@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rake'
+require 'lib/bayes_hotel/version'
 
 begin
   require 'jeweler'
@@ -10,7 +11,8 @@ begin
     gem.email = "mperham@gmail.com"
     gem.homepage = "http://github.com/mperham/bayes_hotel"
     gem.authors = ["Mike Perham"]
-    gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
+    gem.version = BayesHotel::VERSION
+    gem.add_development_dependency "shoulda", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
@@ -44,10 +46,8 @@ task :default => :test
 
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
-
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "bayes_hotel #{version}"
+  rdoc.title = "bayes_hotel #{BayesHotel::VERSION}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
