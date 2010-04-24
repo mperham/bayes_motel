@@ -11,7 +11,7 @@ begin
     gem.email = "mperham@gmail.com"
     gem.homepage = "http://github.com/mperham/bayes_motel"
     gem.authors = ["Mike Perham"]
-    gem.version = BayesHotel::VERSION
+    gem.version = BayesMotel::VERSION
     gem.add_development_dependency "shoulda", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
@@ -47,7 +47,7 @@ task :default => :test
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "bayes_motel #{BayesHotel::VERSION}"
+  rdoc.title = "bayes_motel #{BayesMotel::VERSION}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
