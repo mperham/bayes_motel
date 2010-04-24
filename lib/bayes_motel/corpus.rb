@@ -1,4 +1,4 @@
-module BayesHotel
+module BayesMotel
   class Corpus
     attr_reader :name
     attr_reader :total_count

@@ -1,9 +1,9 @@
 require 'helper'
 
-class TestBayesHotel < Test::Unit::TestCase
+class TestBayesMotel < Test::Unit::TestCase
 
   should "allow basic training" do
-    c = BayesHotel::Corpus.new('email')
+    c = BayesMotel::Corpus.new('email')
     tweets.each do |tweet|
       c.train(tweet, :ham)
     end
@@ -12,7 +12,7 @@ class TestBayesHotel < Test::Unit::TestCase
   end
   
   should "allow big training" do
-    c = BayesHotel::Corpus.new('email')
+    c = BayesMotel::Corpus.new('email')
     tweets(2000).each do |tweet|
       c.train(tweet, :ham)
     end

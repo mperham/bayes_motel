@@ -1,7 +1,7 @@
-bayes_hotel
+bayes_motel
 --------------
 
-BayesHotel is a multi-variate Bayesian classification engine.  There are two steps to Bayesian classification:
+BayesMotel is a multi-variate Bayesian classification engine.  There are two steps to Bayesian classification:
 
 1. Training
 You provide a set of variables along with the proper classification for that set.

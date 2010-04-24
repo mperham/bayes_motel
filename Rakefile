@@ -1,15 +1,15 @@
 require 'rubygems'
 require 'rake'
-require 'lib/bayes_hotel/version'
+require 'lib/bayes_motel/version'
 
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "bayes_hotel"
+    gem.name = "bayes_motel"
     gem.summary = %Q{Bayesian classification engine}
     gem.description = %Q{TODO: longer description of your gem}
     gem.email = "mperham@gmail.com"
-    gem.homepage = "http://github.com/mperham/bayes_hotel"
+    gem.homepage = "http://github.com/mperham/bayes_motel"
     gem.authors = ["Mike Perham"]
     gem.version = BayesHotel::VERSION
     gem.add_development_dependency "shoulda", ">= 0"
@@ -47,7 +47,7 @@ task :default => :test
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "bayes_hotel #{BayesHotel::VERSION}"
+  rdoc.title = "bayes_motel #{BayesHotel::VERSION}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
