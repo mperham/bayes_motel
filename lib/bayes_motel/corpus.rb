@@ -10,19 +10,19 @@ module BayesMotel
       @data = {}
     end
     
-    def train(variables, category)
+    def train(doc, category)
       @total_count += 1
-      _training(variables, category)
+      _training(doc, category)
     end
     
-    def score(variables)
-      _score(variables)
+    def score(doc)
+      _score(doc)
     end
       
     # The default classification algorithm just picks
     # the category with the highest score.
-    def classify(variables)
-      results = score(variables)
+    def classify(doc)
+      results = score(doc)
       max = [:none, 0]
       results.each_pair do |(k, v)|
         max = [k, v] if v > max[1]
