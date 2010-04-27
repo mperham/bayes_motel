@@ -15,8 +15,20 @@ module BayesMotel
       training(variables, category)
     end
     
-    def classify(variables)
-      # TODO
+    def odds(variables, name='', odds={})
+      variables.each_pair do |k, v|
+        case v
+        when Hash
+          odds(v, "#{name}_#{k}", odds)
+        else
+          @data.each_pair do |category, raw_counts|
+            cat = odds[category] ||= {}
+            keys = raw_counts["#{name}_#{k}"] || {}
+            cat["#{name}_#{k}_#{v}"] = Float(keys[v] || 0) / @total_count
+          end
+        end
+      end
+      odds.inject({}) { |memo, (key, value)| memo[key] = value.inject(0) { |memo, (key, value)| memo += value }; memo }
     end
     
     def cleanup
@@ -26,20 +38,21 @@ module BayesMotel
     end
     
     private
-    
+
     def training(variables, category, name='')
       variables.each_pair do |k, v|
         case v
         when Hash
           training(v, category, "#{name}_#{k}")
         else
-          values = (@data["#{name}_#{k}"] ||= {})
+          cat = (@data[category] ||= {})
+          values = (cat["#{name}_#{k}"] ||= {})
           values[v] ||= 0
           values[v] += 1
         end
       end
     end
-    
+
     def clean(hash, k, v)
       case v
       when Hash

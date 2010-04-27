@@ -1,7 +1,7 @@
 require 'helper'
 
 class TestBayesMotel < Test::Unit::TestCase
-
+  
   should "allow basic training" do
     c = BayesMotel::Corpus.new('email')
     tweets.each do |tweet|
