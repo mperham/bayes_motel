@@ -37,6 +37,12 @@ Step two is to use the calculated corpus for the category scores or a classifica
     => [:ham, 15.25]
 
 
+Trivia
+==============
+
+Bates Motel is the motel in Alfred Hitchcock's masterpiece _Pyscho_.  Corpus is Latin for "body" but also means 'a canonical set of documents'.  I'm not crazy, I just like puns.
+
+
 Author
 ==============
 
