@@ -51,7 +51,7 @@ module BayesMotel
           end
         end
       end
-      odds.inject({}) { |memo, (key, value)| memo[key] = value.inject(0) { |memo, (key, value)| memo += value }; memo }
+      odds.inject({}) { |memo, (key, value)| memo[key] = value.inject(0) { |acc_memo, (acc_key, acc_value)| acc_memo += acc_value }; memo }
     end
     
     def _training(variables, category, name='')
