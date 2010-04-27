@@ -12,14 +12,37 @@ module BayesMotel
     
     def train(variables, category)
       @total_count += 1
-      training(variables, category)
+      _training(variables, category)
     end
     
-    def odds(variables, name='', odds={})
+    def score(variables)
+      _score(variables)
+    end
+      
+    # The default classification algorithm just picks
+    # the category with the highest score.
+    def classify(variables)
+      results = score(variables)
+      max = [:none, 0]
+      results.each_pair do |(k, v)|
+        max = [k, v] if v > max[1]
+      end
+      max
+    end
+    
+    def cleanup
+      @data.each_pair do |k, v|
+        clean(@data, k, v)
+      end
+    end
+    
+    private
+
+    def _score(variables, name='', odds={})
       variables.each_pair do |k, v|
         case v
         when Hash
-          odds(v, "#{name}_#{k}", odds)
+          _score(v, "#{name}_#{k}", odds)
         else
           @data.each_pair do |category, raw_counts|
             cat = odds[category] ||= {}
@@ -31,19 +54,11 @@ module BayesMotel
       odds.inject({}) { |memo, (key, value)| memo[key] = value.inject(0) { |memo, (key, value)| memo += value }; memo }
     end
     
-    def cleanup
-      @data.each_pair do |k, v|
-        clean(@data, k, v)
-      end
-    end
-    
-    private
-
-    def training(variables, category, name='')
+    def _training(variables, category, name='')
       variables.each_pair do |k, v|
         case v
         when Hash
-          training(v, category, "#{name}_#{k}")
+          _training(v, category, "#{name}_#{k}")
         else
           cat = (@data[category] ||= {})
           values = (cat["#{name}_#{k}"] ||= {})
