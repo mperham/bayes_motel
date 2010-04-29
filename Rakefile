@@ -7,7 +7,7 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "bayes_motel"
     gem.summary = %Q{Bayesian classification engine}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.description = %Q{http://www.mikeperham.com/2010/04/28/bayes_motel-bayesian-classification-for-ruby/}
     gem.email = "mperham@gmail.com"
     gem.homepage = "http://github.com/mperham/bayes_motel"
     gem.authors = ["Mike Perham"]
