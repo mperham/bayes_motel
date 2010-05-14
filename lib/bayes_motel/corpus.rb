@@ -1,92 +1,59 @@
 module BayesMotel
   class Corpus
-    attr_reader :name
-    attr_reader :total_count
-    attr_reader :data
-
-    def initialize(name)
-      @name = name
-      @total_count = 0
-      @data = {}
+    def initialize(persistence)
+      @persistence = persistence
     end
-    
-    def train(doc, category)
-      @total_count += 1
-      _training(doc, category)
+    def train(doc, category, id=0)
+      id == 0 ? id = @persistence.total_count : old_category = @persistence.document_category(id) 
+      if old_category 
+        if old_category.to_s != category.to_s
+          @persistence.edit_document(id, category)
+          _training(doc,old_category, "negative")
+          _training(doc, category)
+        end
+      else
+        @persistence.increment_total()
+        @persistence.create_document(id, category)
+        _training(doc, category)
+      end
     end
-    
     def score(doc)
       _score(doc)
     end
-      
-    # The default classification algorithm just picks
-    # the category with the highest score.
-    def classify(doc)
-      results = score(doc)
-      max = [:none, 0]
-      results.each_pair do |(k, v)|
-        max = [k, v] if v > max[1]
+    def destroy_document(doc, id, category=nil )
+      unless category
+        category = @persistence.document_category(id)
       end
-      max
+      @persistence.destroy_document(id)
+      _training(doc, category, "negative")
     end
-    
-    def cleanup
-      @data.each_pair do |k, v|
-        clean(@data, k, v)
-      end
+    def destroy_classifier
+      @persistence.destroy_classifier
     end
-    
     private
-
     def _score(variables, name='', odds={})
       variables.each_pair do |k, v|
         case v
         when Hash
           _score(v, "#{name}_#{k}", odds)
         else
-          @data.each_pair do |category, raw_counts|
+          @persistence.raw_counts("#{name}_#{k}").each do |category, keys|
             cat = odds[category] ||= {}
-            keys = raw_counts["#{name}_#{k}"] || {}
-            cat["#{name}_#{k}_#{v}"] = Float(keys[v] || 0) / @total_count
+            cat["#{name}_#{k}_#{v}"] = Float(keys[v] || 0) / @persistence.total_count
           end
         end
       end
       odds.inject({}) { |memo, (key, value)| memo[key] = value.inject(0) { |acc_memo, (acc_key, acc_value)| acc_memo += acc_value }; memo }
     end
-    
-    def _training(variables, category, name='')
+    def _training(variables, category, polarity="positive" , name='')
       variables.each_pair do |k, v|
         case v
         when Hash
-          _training(v, category, "#{name}_#{k}")
+          _training(v, category, polarity, "#{name}_#{k}")
         else
-          cat = (@data[category] ||= {})
-          values = (cat["#{name}_#{k}"] ||= {})
-          values[v] ||= 0
-          values[v] += 1
+          @persistence.save_training(category, "#{name}_#{k}", v, polarity) 
         end
       end
     end
-
-    def clean(hash, k, v)
-      case v
-      when Hash
-        v.each_pair do |key, value|
-          clean(v, key, value)
-        end
-        if v.empty?
-          hash.delete(k)
-        elsif v.size == 1 and v['other']
-          hash.delete(k)
-        end
-      else
-        if v < (@total_count * 0.03).floor
-          hash['other'] ||= 0
-          hash['other'] += v
-          hash.delete(k)
-        end
-      end
-    end
-
   end
 end

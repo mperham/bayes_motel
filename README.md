@@ -1,5 +1,15 @@
-bayes_motel
+bayes_motel_aseever
 --------------
+
+@aseever fork: This version of bayes_motel is initialized with a persistence object to interact with a data store of your choosing. 
+In memory (BayesMotel::Persistence::MemoryInterface) and MongoDB (BayesMotel::Persistence::MongoInterface) interfaces are provided. 
+This version also tracks a "document ID" if provided at training time. 
+If an ID is provided, attempting to re-train on the same document and the same category will have no effect on the trainer.
+Attempting to re-train with a different category will decrement the appropriate category scores and increment the new ones.
+Destroying that document will remove its scores from the corpus.
+Note that if an ID is not supplied, the ID will be set to the total_count incrementer, and if looked up can be supplied later for retraining. 
+MemoryInterface.save_to_mongo can be used to create a batching operation by scoring in memory, then dumping the data to MongoDB. 
+To use the MongoDB version, MongoDB and the MongoMapper gem are required.
 
 BayesMotel is a multi-variate Bayesian classification engine.  There are two steps to Bayesian classification:
 
@@ -14,28 +24,49 @@ Commonly this is used for spam detection.  You will provide a corpus of emails o
 Usage
 =============
 
-Step one is to create a corpus that you can train with a set of previously classified documents:
+require 'bayes_motel'
+a = {"a"=>1,"b"=>2}
+b = {"a"=>0,"b"=>1}
 
-    corpse = BayesMotel::Corpus.new('tweets')
-    spam_tweets.each do |tweet|
-      corpse.train(tweet, :spam)
-    end
-    good_tweets.each do |tweet|
-      corpse.train(tweet, :ham)
-    end
-    corpse.cleanup
+#Testing In Memory
 
-In this example, we have a set of spammy tweets and a set of known good tweets.  We pass in each tweet
-to our train() method.  Once we have completed training, we call cleanup which will run through the
-internal data structures and clean up any variables that are too 'unique' to make a difference in classification (for instance, an :id variable will be unique for each tweet and so will be removed in the cleanup since it does not repeat enough times).
+mm = BayesMotel::Persistence::MemoryInterface.new("spamfilter1")
+cmm = BayesMotel::Corpus.new(mm)
+cmm.train(a,:spam, 1)
+cmm.train(b,:ham, 2)
+cmm.score(a)
+cmm.score(b)
 
-Step two is to use the calculated corpus for the category scores or a classification for a given document:
+mm.save_to_mongo
 
-    corpse.scores(new_tweet)
-    => { :spam => 12.4, :ham => 15.25 }
-    corpse.classify(new_tweet)
-    => [:ham, 15.25]
+cmm.train(a,:spam, 1) 
+cmm.score(a) 
+cmm.train(a,:ham, 1)
+cmm.score(a)  
+cmm.destroy_document(a, 1) 
+cmm.score(a)  
 
+#Testing MongoDB
+
+mo = BayesMotel::Persistence::MongoInterface.new("spamfilter2")
+cmo = BayesMotel::Corpus.new(mo)
+cmo.train(a,:spam, 1)
+cmo.train(b,:ham, 2)
+cmo.score(a)
+cmo.score(b)
+cmo.train(a,:spam, 1)
+cmo.score(a)
+cmo.train(a,:ham, 1)
+cmo.score(a)
+cmo.destroy_document(a, 1) 
+cmo.score(a) 
+
+#Testing the save_to_mongo above
+
+smo = BayesMotel::Persistence::MongoInterface.new("spamfilter1")
+scmo = BayesMotel::Corpus.new(smo)
+scmo.score(a)
+scmo.score(b)
 
 Trivia
 ==============
@@ -47,6 +78,7 @@ Author
 ==============
 
 Mike Perham, mperham AT gmail.com, @mperham, http://mikeperham.com
+Fork by Adam Seever, aseever AT gmail.com, @aseever, http://adamseever.com
 
 
 Copyright
