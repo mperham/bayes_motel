@@ -18,6 +18,7 @@ BayesMotel is a multi-variate Bayesian classification engine.  There are two ste
 
 1. Training
 You provide a set of variables along with the proper classification for that set.
+
 2. Runtime
 You provide a set of variables and ask for the proper classification according to the training in Step 1.
 
@@ -27,60 +28,60 @@ Commonly this is used for spam detection.  You will provide a corpus of emails o
 Usage
 =============
 
-require 'bayes_motel'
-a = {"a"=>1,"b"=>2}
-b = {"a"=>0,"b"=>1}
+    require 'bayes_motel'
+    a = {"a"=>1,"b"=>2}
+    b = {"a"=>0,"b"=>1}
 
 #Testing In Memory
 
-mm = BayesMotel::Persistence::MemoryInterface.new("spamfilter1")
-cmm = BayesMotel::Corpus.new(mm)
-cmm.train(a,:spam, 1)
-cmm.train(b,:ham, 2)
-cmm.score(a)
-cmm.score(b)
+    mm = BayesMotel::Persistence::MemoryInterface.new("spamfilter1")
+    cmm = BayesMotel::Corpus.new(mm)
+    cmm.train(a,:spam, 1)
+    cmm.train(b,:ham, 2)
+    cmm.score(a)
+    cmm.score(b)
 
-mm.save_to_mongo
+    mm.save_to_mongo
 
-cmm.train(a,:spam, 1) 
-cmm.score(a) 
-cmm.train(a,:ham, 1)
-cmm.score(a)  
-cmm.destroy_document(a, 1) 
-cmm.score(a)  
+    cmm.train(a,:spam, 1) 
+    cmm.score(a) 
+    cmm.train(a,:ham, 1)
+    cmm.score(a)  
+    cmm.destroy_document(a, 1) 
+    cmm.score(a)  
 
 #Testing Mongo
 
-mo = BayesMotel::Persistence::MongomapperInterface.new("spamfilter2")
+    mo = BayesMotel::Persistence::MongomapperInterface.new("spamfilter2")
 
 ..or for mongoid support...
 
-mo = BayesMotel::Persistence::MongoidInterface.new("spamfilter2")
+    mo = BayesMotel::Persistence::MongoidInterface.new("spamfilter2")
 
 
-cmo = BayesMotel::Corpus.new(mo)
-cmo.train(a,:spam, 1)
-cmo.train(b,:ham, 2)
-cmo.score(a)
-cmo.score(b)
-cmo.train(a,:spam, 1)
-cmo.score(a)
-cmo.train(a,:ham, 1)
-cmo.score(a)
-cmo.destroy_document(a, 1) 
-cmo.score(a) 
+    cmo = BayesMotel::Corpus.new(mo)
+    cmo.train(a,:spam, 1)
+    cmo.train(b,:ham, 2)
+    cmo.score(a)
+    cmo.score(b)
+    cmo.train(a,:spam, 1)
+    cmo.score(a)
+    cmo.train(a,:ham, 1)
+    cmo.score(a)
+    cmo.destroy_document(a, 1) 
+    cmo.score(a) 
 
 #Testing the save_to_mongo above
 
-smo = BayesMotel::Persistence::MongomapperInterface.new("spamfilter1")
+    smo = BayesMotel::Persistence::MongomapperInterface.new("spamfilter1")
 
 ..or again for mongoid support...
 
-smo = BayesMotel::Persistence::MongoidInterface.new("spamfilter1")
+    smo = BayesMotel::Persistence::MongoidInterface.new("spamfilter1")
 
-scmo = BayesMotel::Corpus.new(smo)
-scmo.score(a)
-scmo.score(b)
+    scmo = BayesMotel::Corpus.new(smo)
+    scmo.score(a)
+    scmo.score(b)
 
 Trivia
 ==============
