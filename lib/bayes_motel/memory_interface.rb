@@ -15,7 +15,7 @@ module BayesMotel
         @classifier[:total_count]
       end
       def raw_counts(node)
-        @classifier[:data][node]
+        @classifier[:data][node] || []
       end
       def save_training(category, node, score, polarity)
         incrementer = polarity == "positive" ? 1 : -1 
@@ -23,7 +23,7 @@ module BayesMotel
         #Make it look like this: {@classifier=>{:data=>{node=>{category=>{score=>count,otherscore=>othercount}}}}
         #score/count clarification: score can be more than 1 if you have multiple incidences in the same doc. 
         #Count is the number of times we've seen that particular incidence.
-        @classifier[:data][node] ? @classifier[:data][node][category] ? @classifier[:data][node][category][score] ? @classifier[:data][node][category][score] += incrementer : @classifier[:data][node][category].store(score,1) : @classifier[:data][node].store(category, {score=>1}) :  @classifier[:data].store(node, {category, {score=>1}})
+        @classifier[:data][node] ? @classifier[:data][node][category] ? @classifier[:data][node][category][score] ? @classifier[:data][node][category][score] += incrementer : @classifier[:data][node][category].store(score,1) : @classifier[:data][node].store(category, {score=>1}) :  @classifier[:data].store(node, {category => {score=>1}})
       end
       def create_document(doc_id,category)
         @documents.store(doc_id,category)
@@ -45,7 +45,7 @@ module BayesMotel
       def save_to_mongo
         #note that checking for duplicates and changing categorization must be done using MongoInterface directly-
         #this batch job does not have the info to do a granular decrement.
-        @mongo = BayesMotel::Persistence::MongoInterface.new(@classifier[:name])
+        @mongo = BayesMotel::Persistence::MongomapperInterface.new(@classifier[:name])
         @documents.each do |doc_id, category_name|
           @mongo.increment_total
           @mongo.create_document(doc_id, category_name)

@@ -1,5 +1,5 @@
 module BayesMotel
-  module Mongo
+  module Mongomapper
     class RawDocument
       include MongoMapper::Document
       key :doc_id, Integer

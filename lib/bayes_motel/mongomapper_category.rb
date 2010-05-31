@@ -1,5 +1,5 @@
 module BayesMotel
-  module Mongo
+  module Mongomapper
     class Category
       include MongoMapper::Document
       key :name , String

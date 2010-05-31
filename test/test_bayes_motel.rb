@@ -3,7 +3,8 @@ require 'helper'
 class TestBayesMotel < Test::Unit::TestCase
   
   should "allow basic training" do
-    c = BayesMotel::Corpus.new('email')
+    mm = BayesMotel::Persistence::MemoryInterface.new("email")
+    c = BayesMotel::Corpus.new(mm)
     tweets.each do |tweet|
       c.train(tweet, :ham)
     end
@@ -12,7 +13,8 @@ class TestBayesMotel < Test::Unit::TestCase
   end
   
   should "allow big training" do
-    c = BayesMotel::Corpus.new('email')
+    mm = BayesMotel::Persistence::MemoryInterface.new("email")
+    c = BayesMotel::Corpus.new(mm)
     tweets(2000).each do |tweet|
       c.train(tweet, :ham)
     end

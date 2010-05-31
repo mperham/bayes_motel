@@ -1,15 +1,18 @@
 bayes_motel_aseever
 --------------
 
-@aseever fork: This version of bayes_motel is initialized with a persistence object to interact with a data store of your choosing. 
-In memory (BayesMotel::Persistence::MemoryInterface) and MongoDB (BayesMotel::Persistence::MongoInterface) interfaces are provided. 
+This version of bayes_motel is initialized with a persistence object to interact with a data store of your choosing. 
+In memory (BayesMotel::Persistence::MemoryInterface), Mongomapper (BayesMotel::Persistence::MongomapperInterface) and Mongoid (BayesMotel::Persistence::MongoidInterface) interfaces are provided.
+
 This version also tracks a "document ID" if provided at training time. 
 If an ID is provided, attempting to re-train on the same document and the same category will have no effect on the trainer.
 Attempting to re-train with a different category will decrement the appropriate category scores and increment the new ones.
 Destroying that document will remove its scores from the corpus.
 Note that if an ID is not supplied, the ID will be set to the total_count incrementer, and if looked up can be supplied later for retraining. 
+
 MemoryInterface.save_to_mongo can be used to create a batching operation by scoring in memory, then dumping the data to MongoDB. 
-To use the MongoDB version, MongoDB and the MongoMapper gem are required.
+
+To use the MongoDB version, MongoDB and the MongoMapper or Mongoid gem are required.
 
 BayesMotel is a multi-variate Bayesian classification engine.  There are two steps to Bayesian classification:
 
@@ -46,9 +49,15 @@ cmm.score(a)
 cmm.destroy_document(a, 1) 
 cmm.score(a)  
 
-#Testing MongoDB
+#Testing Mongo
 
-mo = BayesMotel::Persistence::MongoInterface.new("spamfilter2")
+mo = BayesMotel::Persistence::MongomapperInterface.new("spamfilter2")
+
+..or for mongoid support...
+
+mo = BayesMotel::Persistence::MongoidInterface.new("spamfilter2")
+
+
 cmo = BayesMotel::Corpus.new(mo)
 cmo.train(a,:spam, 1)
 cmo.train(b,:ham, 2)
@@ -63,7 +72,12 @@ cmo.score(a)
 
 #Testing the save_to_mongo above
 
-smo = BayesMotel::Persistence::MongoInterface.new("spamfilter1")
+smo = BayesMotel::Persistence::MongomapperInterface.new("spamfilter1")
+
+..or again for mongoid support...
+
+smo = BayesMotel::Persistence::MongoidInterface.new("spamfilter1")
+
 scmo = BayesMotel::Corpus.new(smo)
 scmo.score(a)
 scmo.score(b)
@@ -79,6 +93,7 @@ Author
 
 Mike Perham, mperham AT gmail.com, @mperham, http://mikeperham.com
 Fork by Adam Seever, aseever AT gmail.com, @aseever, http://adamseever.com
+Fork again by Hunter Nield, hunter AT infinite.ly, @hunternield, http://infinite.ly
 
 
 Copyright

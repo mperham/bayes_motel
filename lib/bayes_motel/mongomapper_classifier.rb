@@ -1,5 +1,5 @@
 module BayesMotel
-  module Mongo
+  module Mongomapper
     class Classifier
       include MongoMapper::Document
       key :name , String

@@ -30,6 +30,24 @@ module BayesMotel
     def destroy_classifier
       @persistence.destroy_classifier
     end
+    
+    def cleanup
+      # TODO
+    end
+    
+    def total_count
+      @persistence.total_count
+    end
+    
+    def classify(doc)
+      results = score(doc)
+      max = [:none, 0]
+      results.each_pair do |(k, v)|
+        max = [k, v] if v > max[1]
+      end
+      max
+    end
+    
     private
     def _score(variables, name='', odds={})
       variables.each_pair do |k, v|

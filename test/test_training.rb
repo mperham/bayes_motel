@@ -3,7 +3,8 @@ require 'helper'
 class TestTraining < Test::Unit::TestCase
   
   should "handle basic training" do
-    c = BayesMotel::Corpus.new('test')
+    mm = BayesMotel::Persistence::MemoryInterface.new("test")
+    c = BayesMotel::Corpus.new(mm)
     c.train({ :something => 'foo' }, :ham)
     c.train({ :something => 'foo' }, :spam)
     
@@ -14,7 +15,8 @@ class TestTraining < Test::Unit::TestCase
   end
 
   should "not care about extra variables" do
-    c = BayesMotel::Corpus.new('test')
+    mm = BayesMotel::Persistence::MemoryInterface.new("test")
+    c = BayesMotel::Corpus.new(mm)
     c.train({ :something => 'foo' }, :ham)
     c.train({ :something => 'foo', :fubwhiz => 'oh noes' }, :spam)
     
@@ -25,7 +27,8 @@ class TestTraining < Test::Unit::TestCase
   end
 
   should "give more weight with more appearances" do
-    c = BayesMotel::Corpus.new('test')
+    mm = BayesMotel::Persistence::MemoryInterface.new("test")
+    c = BayesMotel::Corpus.new(mm)
     c.train({ :something => 'foo' }, :ham)
     c.train({ :something => 'foo' }, :spam)
     c.train({ :something => 'foo', :fubwhiz => 'oh noes' }, :spam)
@@ -39,7 +42,8 @@ class TestTraining < Test::Unit::TestCase
   end
   
   should "calculate score for nested documents" do
-    c = BayesMotel::Corpus.new('test')
+    mm = BayesMotel::Persistence::MemoryInterface.new("test")
+    c = BayesMotel::Corpus.new(mm)
     c.train({ :something => 'foo', :kids => { :bar => 'whiz', :id => 123 } }, :ham)
     c.train({ :something => 'foo', :kids => { :bar => 'gee', :id => 145 } }, :spam)
 
