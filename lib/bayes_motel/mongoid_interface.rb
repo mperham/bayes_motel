@@ -1,7 +1,7 @@
 module BayesMotel
   module Persistence
     class MongoidInterface
-      def initialize(name)
+      def initialize(name)        
         @classifier = BayesMotel::Mongoid::Classifier.where(:name => name).first || create_classifier(name)
       end
       def raw_counts(node)
@@ -18,8 +18,9 @@ module BayesMotel
         map_nodes
       end
       def save_training(category, node_name, score, polarity)
-        category = BayesMotel::Mongoid::Category.where(:classifier=>@classifier.id, :name=> category).first || create_category(category)
-        node = BayesMotel::Mongoid::Node.where(:classifier=>@classifier.id, :category=>category.id, :name=>node_name, :value=>score).first || create_node(category.id,node_name,score)
+        category = BayesMotel::Mongoid::Category.where(:classifier => @classifier.id, :name => category).first || create_category(category)
+        node = BayesMotel::Mongoid::Node.where(:classifier => @classifier.id, :category => category.id, :name => node_name, :value => score).first || create_node(category.id, node_name, score)
+        # puts "node: #{node.inspect}"
         polarity == "positive" ? node.incidence += 1 : node.incidence -= 1
         node.save
       end
@@ -54,6 +55,10 @@ module BayesMotel
       
       def total_count
         @classifier.total_count
+      end
+      
+      def cleanup
+        destroy_classifier
       end
       
       private

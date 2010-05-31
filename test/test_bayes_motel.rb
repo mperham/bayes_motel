@@ -8,8 +8,9 @@ class TestBayesMotel < Test::Unit::TestCase
     tweets.each do |tweet|
       c.train(tweet, :ham)
     end
-    c.cleanup
+    
     assert_equal tweets.size, c.total_count
+    c.cleanup
   end
   
   should "allow big training" do
@@ -18,8 +19,31 @@ class TestBayesMotel < Test::Unit::TestCase
     tweets(2000).each do |tweet|
       c.train(tweet, :ham)
     end
-    c.cleanup
+    
     assert_equal tweets.size, c.total_count
+    c.cleanup
+  end
+  
+  should "allow basic training using mongoid" do
+    mm = BayesMotel::Persistence::MongoidInterface.new("email")
+    c = BayesMotel::Corpus.new(mm)
+    tweets.each do |tweet|
+      c.train(tweet, :ham)
+    end
+    
+    assert_equal tweets.size, c.total_count
+    c.cleanup
+  end
+  
+  should "allow big training using mongoid" do
+    mm = BayesMotel::Persistence::MongoidInterface.new("email2")
+    c = BayesMotel::Corpus.new(mm)
+    tweets(2000).each do |tweet|
+      c.train(tweet, :ham)
+    end
+    
+    assert_equal tweets.size, c.total_count
+    c.cleanup
   end
   
   private
@@ -32,6 +56,7 @@ class TestBayesMotel < Test::Unit::TestCase
           hash = eval(line)
           hash.delete(:retweeted_status) if hash[:retweeted_status]
           t << hash
+          break if n > 10
         end
       end
       t

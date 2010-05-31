@@ -3,8 +3,8 @@ module BayesMotel
     class Node
       include ::Mongoid::Document
       field :name
-      field :value, :field => Integer
-      field :incidence, :field => Integer
+      field :value #, :type => Integer
+      field :incidence, :type => Integer
       field :category
       field :classifier
     end

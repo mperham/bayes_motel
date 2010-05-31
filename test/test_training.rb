@@ -11,6 +11,7 @@ class TestTraining < Test::Unit::TestCase
     results = c.score({ :something => 'foo' })
     assert results
     assert_equal 2, results.size
+    assert_not_equal results[:spam], nil
     assert_equal results[:spam], results[:ham]
   end
 

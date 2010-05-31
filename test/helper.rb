@@ -6,8 +6,11 @@ require 'mongoid'
 
 Mongoid.configure do |config|
   database = 'bayes_motel_test'
+  host = "127.0.0.1"
+  port = "27017"
   opts = {} 
   opts[:logger] = Logger.new(File.dirname(__FILE__) + "/mongoid.test.log")
+  config.master = Mongo::Connection.new(host, port, opts).db(database)
 end
 
 

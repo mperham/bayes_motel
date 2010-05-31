@@ -18,7 +18,7 @@ module BayesMotel
       end
     end
     def score(doc)
-      _score(doc)
+      _score(doc).symbolize_keys
     end
     def destroy_document(doc, id, category=nil )
       unless category
@@ -32,7 +32,7 @@ module BayesMotel
     end
     
     def cleanup
-      # TODO
+      @persistence.cleanup
     end
     
     def total_count

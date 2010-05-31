@@ -14,6 +14,9 @@ module BayesMotel
       def total_count
         @classifier[:total_count]
       end
+      def cleanup
+        delete
+      end
       def raw_counts(node)
         @classifier[:data][node] || []
       end
