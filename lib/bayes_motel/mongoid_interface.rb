@@ -3,9 +3,12 @@ module BayesMotel
     class MongoidInterface
       def initialize(name)        
         @classifier = BayesMotel::Mongoid::Classifier.where(:name => name).first || create_classifier(name)
+        @cached_nodes = {}
+        refresh_nodes
       end
       def raw_counts(node)
-        nodes = BayesMotel::Mongoid::Node.where(:classifier => @classifier.id, :name => node)
+        @cached_nodes[node] ||= @nodes.where(:name => node) 
+        nodes = @cached_nodes[node] 
         map_nodes = {}
         #format the nodes like so: {category_name=>{value, incidence}}
         nodes.map { |node| 
@@ -17,12 +20,16 @@ module BayesMotel
         }
         map_nodes
       end
+      def refresh_nodes
+        @nodes = BayesMotel::Mongoid::Node.where(:classifier => @classifier.id)
+      end
       def save_training(category, node_name, score, polarity)
         category = BayesMotel::Mongoid::Category.where(:classifier => @classifier.id, :name => category).first || create_category(category)
         node = BayesMotel::Mongoid::Node.where(:classifier => @classifier.id, :category => category.id, :name => node_name, :value => score).first || create_node(category.id, node_name, score)
         # puts "node: #{node.inspect}"
         polarity == "positive" ? node.incidence += 1 : node.incidence -= 1
         node.save
+        refresh_nodes
       end
       def create_document(doc_id, category_name)
         category = BayesMotel::Mongoid::Category.where(:classifier=>@classifier.id, :name=> category_name).first || create_category(category_name)
