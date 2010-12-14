@@ -3,7 +3,7 @@ module BayesMotel
     class Category
       include ::Mongoid::Document
       field :name
-      field :classifier_id
+      field :classifier
     end
   end
 end
