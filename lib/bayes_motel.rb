@@ -1,4 +1,6 @@
 require 'bayes_motel/version'
+require 'bayes_motel/stopwords'
+require 'bayes_motel/hasher'
 require 'bayes_motel/corpus'
 
 #require 'bayes_motel/mongomapper_raw_document'

@@ -1,0 +1,6 @@
+test:
+  sessions:
+    default:
+      database: bayes_test
+      hosts:
+        - localhost:27017

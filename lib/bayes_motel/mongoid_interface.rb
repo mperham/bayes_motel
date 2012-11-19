@@ -2,18 +2,18 @@ module BayesMotel
   module Persistence
     class MongoidInterface
 
-      def initialize(name)        
+      def initialize(name)
         @classifier = BayesMotel::Mongoid::Classifier.where(:name => name).first || create_classifier(name)
         @cached_nodes = {}
         refresh_nodes
       end
 
       def raw_counts(node)
-        @cached_nodes[node] ||= @nodes.where(:name => node) 
-        nodes = @cached_nodes[node] 
+        @cached_nodes[node] ||= @nodes.where(:name => node)
+        nodes = @cached_nodes[node]
         map_nodes = {}
         #format the nodes like so: {category_name=>{value, incidence}}
-        nodes.map { |node| 
+        nodes.map { |node|
           if map_nodes[cat_name(node.category)]
             map_nodes[cat_name(node.category)].store(node.value, node.incidence)
           else
@@ -23,16 +23,42 @@ module BayesMotel
         map_nodes
       end
 
+      def word_count(node, category)
+        counts = raw_counts(node)[category].values
+        count = counts.inject(0){|sum,item| sum + item}
+        count
+      end
+
+      def document_count(category)
+        cat = BayesMotel::Mongoid::Category.find_by(:name => category.to_sym)
+        nodes = BayesMotel::Mongoid::RawDocument.where(:category => cat.id)
+        count = nodes.count
+        count
+      end
+
       def refresh_nodes
         @nodes = BayesMotel::Mongoid::Node.where(:classifier => @classifier.id)
       end
 
       def save_training(category, node_name, score, polarity)
-        category = BayesMotel::Mongoid::Category.where(:classifier => @classifier.id, :name => category).first || create_category(category)
-        node = BayesMotel::Mongoid::Node.where(:classifier => @classifier.id, :category => category.id, :name => node_name, :value => score).first || create_node(category.id, node_name, score)
-        # puts "node: #{node.inspect}"
-        polarity == "positive" ? node.incidence += 1 : node.incidence -= 1
-        node.save
+
+        score.each do |word, count|
+          incrementer = polarity == "positive" ? count : -count
+
+          category = BayesMotel::Mongoid::Category.where(:classifier => @classifier.id, :name => category).first || create_category(category)
+
+          if node = BayesMotel::Mongoid::Node.where(:classifier => @classifier.id, :category => category.id, :name => node_name, :value => word).first
+            node.incidence = node.incidence + incrementer
+            node.save
+          else
+            node = create_node(category.id, node_name, word, incrementer)
+          end
+
+          # node = BayesMotel::Mongoid::Node.where(:classifier => @classifier.id, :category => category.id, :name => node_name, :value => score).first ||
+          # puts "node: #{node.inspect}"
+          # polarity == "positive" ? node.incidence += 1 : node.incidence -= 1
+          node
+        end
         refresh_nodes
       end
 
@@ -53,10 +79,10 @@ module BayesMotel
         doc ? BayesMotel::Mongoid::Category.find(doc.category).name : nil
       end
 
-      def destroy_classifier 
+      def destroy_classifier
         BayesMotel::Mongoid::Node.where(:classifier => @classifier.id).each do |n| n.destroy end
         BayesMotel::Mongoid::Category.where(:classifier => @classifier.id).each do |c| c.destroy end
-        BayesMotel::Mongoid::RawDocument.where(:classifier => @classifier.id).each do |r| r.destroy end 
+        BayesMotel::Mongoid::RawDocument.where(:classifier => @classifier.id).each do |r| r.destroy end
         @classifier.destroy
       end
 
@@ -77,17 +103,17 @@ module BayesMotel
       def cleanup
         destroy_classifier
       end
-      
+
       private
-      
+
       def create_category(category_name)
        category = BayesMotel::Mongoid::Category.new(:classifier => @classifier.id, :name => category_name)
        category.save
        category
      end
 
-     def create_node(category, node_name, score)
-       node = BayesMotel::Mongoid::Node.new(:classifier => @classifier.id, :category => category, :name => node_name, :value => score, :incidence => 0)
+     def create_node(category, node_name, word, count)
+       node = BayesMotel::Mongoid::Node.new(:classifier => @classifier.id, :category => category, :name => node_name, :value => word, :incidence => count)
        node.save
        node
      end
@@ -102,7 +128,7 @@ module BayesMotel
       @cat_names ||= {}
       @cat_names[id] ||=  BayesMotel::Mongoid::Category.find(id).name
      end
-     
+
     end
   end
 end
