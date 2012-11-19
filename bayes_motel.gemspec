@@ -28,4 +28,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'test-unit'
   s.add_development_dependency 'mongoid'
   s.add_development_dependency 'bson_ext'
+  s.add_development_dependency 'jeweler'
+
 end

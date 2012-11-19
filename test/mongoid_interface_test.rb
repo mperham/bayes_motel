@@ -1,6 +1,6 @@
 require 'helper'
 
-class TestMongoidTraining < Test::Unit::TestCase
+class MongoidInterfaceTest < Test::Unit::TestCase
 
   def setup
     Mongoid.default_session.collections.select {|c| c.name !~ /system/ }.each(&:drop)
