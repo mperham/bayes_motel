@@ -76,7 +76,7 @@ module BayesMotel
     def clean(hash, k, v)
       case v
       when Hash
-        v.each_pair do |key, value|
+        v.to_a.each do |key, value|
           clean(v, key, value)
         end
         if v.empty?
