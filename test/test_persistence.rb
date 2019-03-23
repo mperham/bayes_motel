@@ -1,13 +1,13 @@
 require 'helper'
 require 'fileutils'
 
-class TestPersistence < Test::Unit::TestCase
+class TestPersistence < MiniTest::Test
 
   should "persist" do
     c1 = BayesMotel::Corpus.new('test1')
     c1.train({ :something => 'foo', :kids => { :bar => 'whiz', :id => 123 } }, :ham)
     c1.train({ :something => 'foo', :kids => { :bar => 'gee', :id => 145 } }, :spam)
-    
+
     BayesMotel::Persistence.write(c1)
     c2 = BayesMotel::Persistence.read('test1')
     FileUtils.rm_f 'test1'

@@ -1,7 +1,6 @@
-require 'rubygems'
 require 'shoulda'
 require 'simplecov'
-require 'test/unit'
+require 'minitest/autorun'
 require 'zlib'
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
